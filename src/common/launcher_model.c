@@ -593,6 +593,10 @@ void launcher_model_init(LauncherModel* m,
         m->has_gyro_controls    = game->has_gyro_controls != 0;
         m->has_sharp_filter     = game->has_sharp_filter != 0;
         m->has_affine_filter    = game->has_affine_filter != 0;
+        m->host_toggle_label    = game->host_toggle_label;
+        m->host_toggle_help     = game->host_toggle_help;
+        m->host_toggle_get      = game->host_toggle_get;
+        m->host_toggle_set      = game->host_toggle_set;
         m->has_frame_blend      = game->has_frame_blend != 0;
         m->has_run_ahead        = game->has_run_ahead != 0;
         m->has_shader           = game->has_shader != 0;
@@ -1714,6 +1718,13 @@ const char* launcher_model_effective_rom_path(const LauncherModel* m) {
     if (m && m->rom_patch_prepared_path[0])
         return m->rom_patch_prepared_path;
     return m ? m->rom_full : "";
+}
+
+const char* launcher_model_commit_rom_path(const LauncherModel* m) {
+    if (m && m->rom_patch_prepared_path[0] &&
+        m->s.rom_patch_source_path[0])
+        return m->s.rom_patch_source_path;
+    return launcher_model_effective_rom_path(m);
 }
 
 bool launcher_model_rom_verified(const LauncherModel* m) {

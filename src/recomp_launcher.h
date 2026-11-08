@@ -2480,6 +2480,18 @@ typedef struct RecompLauncherCGameInfo {
     int                has_vsync_vrr;
     /* Keep failed or mod-owned frame generation out of the pipeline settings. */
     int                frame_generation_hidden;
+
+    /* One host-owned checkbox drawn on the dashboard footer beside "Skip
+     * launcher on boot", for a title preference the launcher has no field for
+     * (e.g. "Check for updates on start"). The host keeps and persists the
+     * value: the launcher
+     * reads host_toggle_get() when it draws and calls host_toggle_set() on
+     * every change. NULL host_toggle_get => no row. host_toggle_help is the
+     * hover text; NULL => none. Appended for ABI stability. */
+    const char*        host_toggle_label;
+    const char*        host_toggle_help;
+    int              (*host_toggle_get)(void);
+    void             (*host_toggle_set)(int value);
 } RecompLauncherCGameInfo;
 #define RECOMP_LAUNCHER_HAS_VSYNC_VRR 1
 #define RECOMP_LAUNCHER_HAS_FRAME_GENERATION_HIDDEN 1

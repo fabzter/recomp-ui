@@ -370,6 +370,12 @@ typedef struct {
     bool has_gyro_controls;
     bool has_sharp_filter;
     bool has_affine_filter;
+    // Borrowed from GameInfo.host_toggle_*: one host-owned checkbox beside
+    // "Skip launcher on boot". The value lives in the host; NULL get => none.
+    const char* host_toggle_label;
+    const char* host_toggle_help;
+    int (*host_toggle_get)(void);
+    void (*host_toggle_set)(int value);
     bool has_frame_blend;
     bool has_run_ahead;
     bool has_shader;
@@ -812,6 +818,11 @@ const char* launcher_model_rom_path(const LauncherModel* m);
 // Effective path returned to the host after a patch was prepared; otherwise
 // the selected stock-ROM path.
 const char* launcher_model_effective_rom_path(const LauncherModel* m);
+
+// Path the mod runtime should commit against: the verified stock image when
+// a ROM patch produced the effective one (catalogs digest the stock file),
+// otherwise the effective path.
+const char* launcher_model_commit_rom_path(const LauncherModel* m);
 
 // Patch selection and launch preparation. Selecting a patch enables it;
 // clearing disables it. Preparation verifies the stock image, applies the

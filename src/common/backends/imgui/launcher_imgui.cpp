@@ -11605,7 +11605,7 @@ static void mod_note_error(LauncherModel* m) {
 
 static bool mod_commit_launch(LauncherModel* m) {
     if (!m || !m->mods || !m->mods->commit ||
-        m->mods->commit(m->mods->ctx, launcher_model_effective_rom_path(m))) {
+        m->mods->commit(m->mods->ctx, launcher_model_commit_rom_path(m))) {
         if (m && m->has_bios && m->bios_verify_for_rom_cb) {
             launcher_model_refresh_bios_status(m);
             if (!m->setup_bios_ok) {
@@ -11633,7 +11633,7 @@ static bool launch_commit_pending() {
 static void request_mod_commit_launch(LauncherModel* m) {
     if (s_launch_commit) {
         const auto request = s_launch_commit->launch(
-            m->mods, m->in_session, launcher_model_effective_rom_path(m));
+            m->mods, m->in_session, launcher_model_commit_rom_path(m));
         if (request == LauncherModPreparation::Request::Ready) {
             m->mod_status[0] = '\0';
             m->action = LNG_ACTION_LAUNCH;
@@ -12993,6 +12993,16 @@ void draw_footer(LauncherModel* m, const LauncherTheme& th, float footer_h) {
         ImGui::SetCursorScreenPos(ImVec2(origin.x, cta_y + (play_h - ImGui::GetFrameHeight()) * 0.5f));
         if (ImGui::Checkbox(ui_text("Skip launcher on boot"), &skip))
             launcher_model_request_skip_toggle(m);
+        // The host-owned checkbox (GameInfo.host_toggle_*) sits beside it. The
+        // value is the host's: read on every draw, written back on change.
+        if (m->host_toggle_get && m->host_toggle_label) {
+            ImGui::SameLine(0.0f, px(28.0f));
+            bool host = m->host_toggle_get() != 0;
+            if (ImGui::Checkbox(ui_text(m->host_toggle_label), &host) && m->host_toggle_set)
+                m->host_toggle_set(host ? 1 : 0);
+            if (m->host_toggle_help && m->host_toggle_help[0] && ImGui::IsItemHovered())
+                ImGui::SetTooltip("%s", m->host_toggle_help);
+        }
     } else if (m->view == LNG_VIEW_SETTINGS &&
                launcher_model_can_restore_defaults(m)) {
         ImGui::SetCursorScreenPos(
@@ -15461,7 +15471,7 @@ extern "C" LngAction launcher_backend_run(LauncherPlatform* p,
             !ImGui::IsAnyItemActive() &&
             !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel)) {
             const auto request = launch_commit.prepare_if_changed(
-                m->mods, m->in_session, launcher_model_effective_rom_path(m));
+                m->mods, m->in_session, launcher_model_commit_rom_path(m));
             if (request == LauncherModPreparation::Request::Failed) {
                 std::snprintf(m->mod_status, sizeof m->mod_status, "%s", launch_commit.error());
                 launcher_model_set_view(m, LNG_VIEW_MODS);
