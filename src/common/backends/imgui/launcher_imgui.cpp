@@ -4173,8 +4173,7 @@ void draw_display_controls(LauncherModel* m, const LauncherTheme& th) {
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal))
                 ImGui::SetTooltip(
                     "Render past the native 256-pixel field to fill a wider "
-                    "window. Margins adapt to the window shape.
-"
+                    "window. Margins adapt to the window shape.\n"
                     "Off is the faithful, unmodified picture.");
         }
         if (m->has_integer_scale) {   // NES module: snap the image to integer multiples
@@ -4400,8 +4399,7 @@ void draw_display_controls(LauncherModel* m, const LauncherTheme& th) {
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal))
             ImGui::SetTooltip(
                 "Render past the native 256-pixel field to fill a wider "
-                "window. Margins adapt to the window shape.
-"
+                "window. Margins adapt to the window shape.\n"
                 "Off is the faithful, unmodified picture.");
     }
 
