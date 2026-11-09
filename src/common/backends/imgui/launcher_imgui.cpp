@@ -3994,6 +3994,7 @@ bool video_card_grows(const LauncherModel* m) {
     if (m->has_frame_blend || m->has_vsync) return true;
     if (m->has_run_ahead) return true;
     if (m->num_display_layouts > 0) return true;
+    if (m->widescreen_supported) return true;   // legacy "Widescreen" row
     // NES legacy-surface additions (Integer scaling row, HD texture pack block)
     // add extra rows the fixed no_scroll band wasn't sized for.
     if (m->has_integer_scale || m->hdpack_supported) return true;
@@ -4165,6 +4166,17 @@ void draw_display_controls(LauncherModel* m, const LauncherTheme& th) {
             ImGui::PopID();
         }
         draw_aspect_row(m, th);
+        if (m->widescreen_supported) {
+            row_label_right("Widescreen", th, cb);
+            bool ws = m->s.widescreen != 0;
+            if (ImGui::Checkbox("##widescreen", &ws)) launcher_model_toggle_widescreen(m);
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal))
+                ImGui::SetTooltip(
+                    "Render past the native 256-pixel field to fill a wider "
+                    "window. Margins adapt to the window shape.
+"
+                    "Off is the faithful, unmodified picture.");
+        }
         if (m->has_integer_scale) {   // NES module: snap the image to integer multiples
             row_label_right("Integer scaling", th, cb);
             bool is = m->s.integer_scale != 0;
@@ -4380,6 +4392,18 @@ void draw_display_controls(LauncherModel* m, const LauncherTheme& th) {
         ImGui::PopID();
     }
     draw_aspect_row(m, th);
+
+    if (m->widescreen_supported) {
+        row_label_right("Widescreen", th, cb);
+        bool ws = m->s.widescreen != 0;
+        if (ImGui::Checkbox("##widescreen", &ws)) launcher_model_toggle_widescreen(m);
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal))
+            ImGui::SetTooltip(
+                "Render past the native 256-pixel field to fill a wider "
+                "window. Margins adapt to the window shape.
+"
+                "Off is the faithful, unmodified picture.");
+    }
 
     if (m->has_sharp_filter) {
         const float fw = settings_cycle_w(m, "Scaling filter", th,

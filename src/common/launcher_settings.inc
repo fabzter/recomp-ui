@@ -43,6 +43,8 @@ static const Setting kSettings[] = {
     OPTIONAL("Graphics", "Shader", shader_path, TEXT, 0, 0, has_shader),
     OPTIONAL("Graphics", "DisplayAspect", aspect_index, SNES_ASPECT, 0, 2,
              has_snes_display_aspect),
+    OPTIONAL("Graphics", "Widescreen", widescreen, BOOLEAN, 0, 1,
+             widescreen_supported),
     OPTIONAL("Graphics", "FrameBlend", frame_blend, BOOLEAN, 0, 1, has_frame_blend),
     OPTIONAL("Graphics", "VSync", vsync, VSYNC, 1, 3, has_vsync),
     OPTIONAL("Graphics", "Renderer", renderer_id, TEXT, 0, 0, has_renderer),
