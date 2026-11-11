@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum { NUMBER, BOOLEAN, TEXT, OUTPUT, VSYNC, SNES_ASPECT } ValueKind;
+typedef enum { NUMBER, BOOLEAN, TEXT, OUTPUT, VSYNC, SNES_ASPECT, WINDOW_RATIO } ValueKind;
 typedef struct {
     const char* section;
     const char* key;
@@ -43,6 +43,8 @@ static const Setting kSettings[] = {
     OPTIONAL("Graphics", "Shader", shader_path, TEXT, 0, 0, has_shader),
     OPTIONAL("Graphics", "DisplayAspect", aspect_index, SNES_ASPECT, 0, 2,
              has_snes_display_aspect),
+    OPTIONAL("Graphics", "WindowRatio", window_ratio_index, WINDOW_RATIO, 0, 3,
+             has_window_ratio),
     OPTIONAL("Graphics", "Widescreen", widescreen, BOOLEAN, 0, 1,
              widescreen_supported),
     OPTIONAL("Graphics", "FrameBlend", frame_blend, BOOLEAN, 0, 1, has_frame_blend),
@@ -119,6 +121,12 @@ static void read_value(const Setting* setting, char* value,
         if (equal(value, "4:3") || equal(value, "CRT") || equal(value, "0")) parsed = 0;
         else if (equal(value, "8:7") || equal(value, "SquarePixels") || equal(value, "1")) parsed = 1;
         else if (equal(value, "1:1") || equal(value, "SquareFrame") || equal(value, "2")) parsed = 2;
+        else return;
+    } else if (setting->kind == WINDOW_RATIO) {
+        if (equal(value, "4:3") || equal(value, "0")) parsed = 0;
+        else if (equal(value, "16:9") || equal(value, "1")) parsed = 1;
+        else if (equal(value, "21:9") || equal(value, "2")) parsed = 2;
+        else if (equal(value, "32:9") || equal(value, "3")) parsed = 3;
         else return;
     } else if (setting->kind == VSYNC) {
         if (equal(value, "adaptive")) parsed = RECOMP_LAUNCHER_VSYNC_ADAPTIVE;
@@ -208,6 +216,9 @@ void launcher_settings_save(const RecompLauncherCSettings* settings,
                 value = names[current];
             } else if (setting->kind == SNES_ASPECT) {
                 static const char* const names[] = {"4:3", "8:7", "1:1"};
+                value = names[current];
+            } else if (setting->kind == WINDOW_RATIO) {
+                static const char* const names[] = {"4:3", "16:9", "21:9", "32:9"};
                 value = names[current];
             } else if (setting->kind == VSYNC) {
                 value = current == RECOMP_LAUNCHER_VSYNC_OFF ? "0" :
